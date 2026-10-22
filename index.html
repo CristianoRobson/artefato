@@ -30,12 +30,13 @@ main{padding:0 5vw 45px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:22px}
 .card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 5px 18px #142c4010;border:1px solid #e6ebef}
 .gallery{position:relative;background:#dce4ea;padding:9px}
+.gallery-link{display:block;text-decoration:none;cursor:pointer}
 .gallery img{display:block;width:100%;height:230px;object-fit:cover;border:5px solid white;border-radius:10px;background:#edf1f4}
-.arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:38px;height:38px;background:#ffffffed;color:#123b5d;font-size:25px;cursor:pointer;box-shadow:0 2px 8px #0002}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:38px;height:38px;background:#ffffffed;color:#123b5d;font-size:25px;cursor:pointer;box-shadow:0 2px 8px #0002;z-index:2}
 .arrow:hover{background:#fff}
 .prev{left:17px}.next{right:17px}
-.counter{position:absolute;bottom:18px;right:18px;background:#14212ccc;color:#fff;border-radius:20px;padding:5px 9px;font-size:12px}
-.dots{display:flex;justify-content:center;gap:6px;margin:8px 0 0}
+.counter{position:absolute;bottom:18px;right:18px;background:#14212ccc;color:#fff;border-radius:20px;padding:5px 9px;font-size:12px;z-index:2}
+.dots{display:flex;justify-content:center;gap:6px;margin:8px 0 0;position:relative;z-index:2}
 .dot{height:7px;width:7px;border-radius:50%;background:#b8c3cc;border:0;padding:0;cursor:pointer}
 .dot.active{background:#1769aa;width:18px;border-radius:8px}
 .info{padding:16px 18px 19px}
@@ -92,7 +93,7 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
     </div>
     <div class="brand">Artefato • Artigos em Impressão 3D</div>
     <h1>Encontre o que você procura</h1>
-    <p>Se não tem agente faz!</p>
+    <p>Se não tem a gente faz!</p>
   </div>
 </header>
 <main>
@@ -108,12 +109,14 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
 </main>
 <footer>© <span id="year"></span> Sua marca • Catálogo demonstrativo. Edite nomes, fotos, preços e contatos para publicar.</footer>
 <script>
+const whatsappNumber = "5549988901231";
+
 const listings = [
 {
   title: "Cofre Super Mario",
   category: "Utilidades",
   price: "R$ 29,90",
-  description: "Prático para seu filho, sobrinho, afiliado guardar seus dinheiros e deixar tudo à mão.",
+  description: "Prático para seu filho, sobrinho, afilhado guardar seus dinheiros e deixar tudo à mão.",
   details: "Disponível • Consulte cores e medidas",
   images: [
     "imgs/Cofre_Mario_1.jpeg",
@@ -132,47 +135,91 @@ const listings = [
     "imgs/Porta_Uisq_2.jpeg"
   ]
 },
- {title:"Peça decorativa",category:"Decoração",price:"R$ 49,90",description:"Detalhe decorativo para dar personalidade ao seu ambiente.",details:"Peça de exemplo • Consulte disponibilidade",images:[
-  "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=85"]},
- {title:"Acessório para o dia a dia",category:"Acessórios",price:"R$ 29,90",description:"Uma opção funcional para facilitar pequenas tarefas cotidianas.",details:"Produto ilustrativo • Consulte detalhes",images:[
-  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=85",
-  "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=900&q=85"]}
+{
+  title:"Peça decorativa",
+  category:"Decoração",
+  price:"R$ 49,90",
+  description:"Detalhe decorativo para dar personalidade ao seu ambiente.",
+  details:"Peça de exemplo • Consulte disponibilidade",
+  images:[
+    "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=85"
+  ]
+},
+{
+  title:"Acessório para o dia a dia",
+  category:"Acessórios",
+  price:"R$ 29,90",
+  description:"Uma opção funcional para facilitar pequenas tarefas cotidianas.",
+  details:"Produto ilustrativo • Consulte detalhes",
+  images:[
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=900&q=85"
+  ]
+}
 ];
-const catalog=document.getElementById('catalog');
+
+const catalog = document.getElementById('catalog');
+
 function render(){
- const q=document.getElementById('search').value.toLocaleLowerCase('pt-BR');
- const cat=document.getElementById('category').value;
- const found=listings.filter(p=>(p.title+' '+p.description+' '+p.category).toLocaleLowerCase('pt-BR').includes(q)&&(!cat||p.category===cat));
- catalog.innerHTML='';
- found.forEach((p,index)=>{
-  const card=document.createElement('article');card.className='card';
-  card.innerHTML=`<div class="gallery">
-   <img src="${p.images[0]}" alt="${p.title} — foto 1" loading="lazy">
+ const q = document.getElementById('search').value.toLocaleLowerCase('pt-BR');
+ const cat = document.getElementById('category').value;
+ const found = listings.filter(p => (p.title + ' ' + p.description + ' ' + p.category).toLocaleLowerCase('pt-BR').includes(q) && (!cat || p.category === cat));
+ catalog.innerHTML = '';
+ 
+ found.forEach((p, index) => {
+  const message = encodeURIComponent(`Olá! Tenho interesse no produto: ${p.title} (${p.price})`);
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `<div class="gallery">
+   <a class="gallery-link" href="${p.images[0]}" target="_blank" rel="noopener" title="Clique para ver a imagem em tamanho cheio">
+     <img src="${p.images[0]}" alt="${p.title} — foto 1" loading="lazy">
+   </a>
    <button class="arrow prev" aria-label="Foto anterior">‹</button>
    <button class="arrow next" aria-label="Próxima foto">›</button>
    <span class="counter">1 / ${p.images.length}</span>
-   <div class="dots">${p.images.map((_,i)=>`<button class="dot ${i===0?'active':''}" aria-label="Ver foto ${i+1}"></button>`).join('')}</div>
+   <div class="dots">${p.images.map((_,i) => `<button class="dot ${i===0?'active':''}" aria-label="Ver foto ${i+1}"></button>`).join('')}</div>
   </div><div class="info">
-   <div class="category">${p.category}</div><h2>${p.title}</h2>
-   <p class="description">${p.description}</p><div class="price">${p.price}</div>
+   <div class="category">${p.category}</div>
+   <h2>${p.title}</h2>
+   <p class="description">${p.description}</p>
+   <div class="price">${p.price}</div>
    <div class="details">${p.details}</div>
-   <a class="contact" href="https://wa.me/?text=${encodeURIComponent('Olá! Tenho interesse no anúncio: '+p.title)}" target="_blank" rel="noopener">Tenho interesse</a>
+   <a class="contact" href="${waUrl}" target="_blank" rel="noopener">Tenho interesse</a>
   </div>`;
-  let current=0;const img=card.querySelector('img'),counter=card.querySelector('.counter'),dots=[...card.querySelectorAll('.dot')];
-  function show(n){current=(n+p.images.length)%p.images.length;img.src=p.images[current];img.alt=`${p.title} — foto ${current+1}`;counter.textContent=`${current+1} / ${p.images.length}`;dots.forEach((d,i)=>d.classList.toggle('active',i===current))}
-  card.querySelector('.prev').addEventListener('click',()=>show(current-1));
-  card.querySelector('.next').addEventListener('click',()=>show(current+1));
-  dots.forEach((d,i)=>d.addEventListener('click',()=>show(i)));
+
+  let current = 0;
+  const img = card.querySelector('img');
+  const imgLink = card.querySelector('.gallery-link');
+  const counter = card.querySelector('.counter');
+  const dots = [...card.querySelectorAll('.dot')];
+
+  function show(n){
+    current = (n + p.images.length) % p.images.length;
+    img.src = p.images[current];
+    imgLink.href = p.images[current];
+    img.alt = `${p.title} — foto ${current + 1}`;
+    counter.textContent = `${current + 1} / ${p.images.length}`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  card.querySelector('.prev').addEventListener('click', () => show(current - 1));
+  card.querySelector('.next').addEventListener('click', () => show(current + 1));
+  dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+  
   catalog.appendChild(card);
  });
- document.getElementById('empty').style.display=found.length?'none':'block';
+
+ document.getElementById('empty').style.display = found.length ? 'none' : 'block';
 }
-document.getElementById('search').addEventListener('input',render);
-document.getElementById('category').addEventListener('change',render);
-document.getElementById('year').textContent=new Date().getFullYear();
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('category').addEventListener('change', render);
+document.getElementById('year').textContent = new Date().getFullYear();
 render();
 </script>
 </body>
