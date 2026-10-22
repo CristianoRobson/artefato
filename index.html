@@ -93,7 +93,7 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
     </div>
     <div class="brand">Artefato • Artigos em Impressão 3D</div>
     <h1>Encontre o que você procura</h1>
-    <p>Se não tem agente faz!</p>
+    <p>Se não tem a gente faz!</p>
   </div>
 </header>
 <main>
@@ -101,13 +101,13 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
     <input id="search" type="search" placeholder="Buscar anúncio..." aria-label="Buscar anúncio">
     <select id="category" aria-label="Filtrar categoria">
       <option value="">Todas as categorias</option>
-      <option>Casa e utilidades</option><option>Acessórios</option><option>Decoração</option>
     </select>
   </div>
   <section id="catalog" class="grid" aria-label="Anúncios"></section>
   <p id="empty" class="empty">Nenhum anúncio encontrado. Tente outra busca.</p>
 </main>
 <footer>© <span id="year"></span> Sua marca • Catálogo demonstrativo. Edite nomes, fotos, preços e contatos para publicar.</footer>
+
 <script>
 const whatsappNumber = "5549988901231";
 
@@ -116,7 +116,7 @@ const listings = [
   title: "Cofre Super Mario",
   category: "Infantil",
   price: "R$ 29,90",
-  description: "Prático para seu filho, sobrinho, afiliado guardar seus dinheiros e deixar tudo à mão.",
+  description: "Prático para seu filho, sobrinho, afilhado guardar seus dinheiros e deixar tudo à mão.",
   details: "Disponível • Consulte cores e medidas",
   images: [
     "imgs/Cofre_Mario_1.jpeg",
@@ -159,33 +159,22 @@ const listings = [
     "imgs/Lembranca_nasc_2.jpeg"
   ]
 },
-  {
-  title: "Enfeites de Natal, persolalizado",
+{
+  title: "Enfeites de Natal personalizados",
   category: "Enfeites Natal",
   price: "R$ verificar",
-  description: "Enfeites de Natal, persolalizado.",
-  details: "Disponível • Consulte cores e medidas",
-  images: [
-    "imgs/Enfeite_treliça_1.jpeg",
-    "imgs/Enfeite_trelica_3.jpeg"
-  ]
-},
-    {
-  title: "Enfeites de Natal, persolalizado",
-  category: "Enfeites Natal",
-  price: "R$ verificar",
-  description: "Enfeites de Natal, persolalizado.",
+  description: "Enfeites de Natal personalizados para sua árvore ou ambiente.",
   details: "Disponível • Consulte cores e medidas",
   images: [
     "imgs/Enfeite_trelica_1.jpeg",
     "imgs/Enfeite_trelica_3.jpeg"
   ]
 },
-    {
-  title: "Chaveiros, persolalizados",
-  category: "Utilizades",
+{
+  title: "Chaveiros personalizados",
+  category: "Utilidades",
   price: "R$ verificar",
-  description: "Chaveiros personalizados, com nome, abridor de garafas e muito mais.",
+  description: "Chaveiros personalizados, com nome, abridor de garrafas e muito mais.",
   details: "Disponível • Consulte cores e medidas",
   images: [
     "imgs/Chaveiro_nome_1.jpeg",
@@ -194,65 +183,86 @@ const listings = [
 }
 ];
 
+// Preenche as opções de categorias dinamicamente com base nos produtos
+function initCategories() {
+  const select = document.getElementById('category');
+  const categories = [...new Set(listings.map(item => item.category))];
+  categories.sort().forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
+  });
+}
+
 const catalog = document.getElementById('catalog');
 
 function render(){
- const q = document.getElementById('search').value.toLocaleLowerCase('pt-BR');
- const cat = document.getElementById('category').value;
- const found = listings.filter(p => (p.title + ' ' + p.description + ' ' + p.category).toLocaleLowerCase('pt-BR').includes(q) && (!cat || p.category === cat));
- catalog.innerHTML = '';
- 
- found.forEach((p, index) => {
-  const message = encodeURIComponent(`Olá! Tenho interesse no anúncio: ${p.title} (${p.price})`);
-  const waUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
-
-  const card = document.createElement('article');
-  card.className = 'card';
-  card.innerHTML = `<div class="gallery">
-   <a class="gallery-link" href="${p.images[0]}" target="_blank" rel="noopener" title="Clique para ver a imagem em tamanho cheio">
-     <img src="${p.images[0]}" alt="${p.title} — foto 1" loading="lazy">
-   </a>
-   <button class="arrow prev" aria-label="Foto anterior">‹</button>
-   <button class="arrow next" aria-label="Próxima foto">›</button>
-   <span class="counter">1 / ${p.images.length}</span>
-   <div class="dots">${p.images.map((_,i) => `<button class="dot ${i===0?'active':''}" aria-label="Ver foto ${i+1}"></button>`).join('')}</div>
-  </div><div class="info">
-   <div class="category">${p.category}</div>
-   <h2>${p.title}</h2>
-   <p class="description">${p.description}</p>
-   <div class="price">${p.price}</div>
-   <div class="details">${p.details}</div>
-   <a class="contact" href="${waUrl}" target="_blank" rel="noopener">Tenho interesse</a>
-  </div>`;
-
-  let current = 0;
-  const img = card.querySelector('img');
-  const imgLink = card.querySelector('.gallery-link');
-  const counter = card.querySelector('.counter');
-  const dots = [...card.querySelectorAll('.dot')];
-
-  function show(n){
-    current = (n + p.images.length) % p.images.length;
-    img.src = p.images[current];
-    imgLink.href = p.images[current];
-    img.alt = `${p.title} — foto ${current + 1}`;
-    counter.textContent = `${current + 1} / ${p.images.length}`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === current));
-  }
-
-  card.querySelector('.prev').addEventListener('click', () => show(current - 1));
-  card.querySelector('.next').addEventListener('click', () => show(current + 1));
-  dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+  const q = document.getElementById('search').value.toLocaleLowerCase('pt-BR').trim();
+  const cat = document.getElementById('category').value;
   
-  catalog.appendChild(card);
- });
+  const found = listings.filter(p => {
+    const matchesQuery = (p.title + ' ' + p.description + ' ' + p.category).toLocaleLowerCase('pt-BR').includes(q);
+    const matchesCat = !cat || p.category === cat;
+    return matchesQuery && matchesCat;
+  });
 
- document.getElementById('empty').style.display = found.length ? 'none' : 'block';
+  catalog.innerHTML = '';
+
+  found.forEach((p) => {
+    const message = encodeURIComponent(`Olá! Tenho interesse no anúncio: ${p.title} (${p.price})`);
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `<div class="gallery">
+      <a class="gallery-link" href="${p.images[0]}" target="_blank" rel="noopener" title="Clique para ver a imagem em tamanho cheio">
+        <img src="${p.images[0]}" alt="${p.title} — foto 1" loading="lazy">
+      </a>
+      <button class="arrow prev" aria-label="Foto anterior">‹</button>
+      <button class="arrow next" aria-label="Próxima foto">›</button>
+      <span class="counter">1 / ${p.images.length}</span>
+      <div class="dots">${p.images.map((_,i) => `<button class="dot ${i===0?'active':''}" aria-label="Ver foto ${i+1}"></button>`).join('')}</div>
+    </div><div class="info">
+      <div class="category">${p.category}</div>
+      <h2>${p.title}</h2>
+      <p class="description">${p.description}</p>
+      <div class="price">${p.price}</div>
+      <div class="details">${p.details}</div>
+      <a class="contact" href="${waUrl}" target="_blank" rel="noopener">Tenho interesse</a>
+    </div>`;
+
+    let current = 0;
+    const img = card.querySelector('img');
+    const imgLink = card.querySelector('.gallery-link');
+    const counter = card.querySelector('.counter');
+    const dots = [...card.querySelectorAll('.dot')];
+
+    function show(n){
+      current = (n + p.images.length) % p.images.length;
+      img.src = p.images[current];
+      imgLink.href = p.images[current];
+      img.alt = `${p.title} — foto ${current + 1}`;
+      counter.textContent = `${current + 1} / ${p.images.length}`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    card.querySelector('.prev').addEventListener('click', (e) => { e.stopPropagation(); show(current - 1); });
+    card.querySelector('.next').addEventListener('click', (e) => { e.stopPropagation(); show(current + 1); });
+    dots.forEach((d, i) => d.addEventListener('click', (e) => { e.stopPropagation(); show(i); }));
+
+    catalog.appendChild(card);
+  });
+
+  document.getElementById('empty').style.display = found.length ? 'none' : 'block';
 }
 
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('category').addEventListener('change', render);
 document.getElementById('year').textContent = new Date().getFullYear();
+
+// Inicializa categorias e renderiza os produtos
+initCategories();
 render();
 </script>
 </body>
